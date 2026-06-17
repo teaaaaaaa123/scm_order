@@ -1433,6 +1433,7 @@ class TestFullProcess:
                 mapped_info = liangti_mapping.get(field_code, {})
                 field_name = mapped_info.get('名称', field_code)
                 field_candidates = [field_name, field_code]
+                field_excludes = []
                 english_name = mapped_info.get('英文')
                 if english_name:
                     field_candidates.append(english_name.strip())
@@ -1443,6 +1444,13 @@ class TestFullProcess:
                 if field_name.startswith('净') and len(field_name) > 1:
                     field_candidates.append(field_name[1:])
                 field_candidates = [name for name in dict.fromkeys(field_candidates) if name]
+                if field_code == 'sleeveLength':
+                    field_excludes = ['右袖长', '左袖长', '长袖长', '短袖长', '外袖长', '内袖长',
+                                      'Sleeve Length Right', 'Sleeve Length Left', 'Right Sleeve Length',
+                                      'Left Sleeve Length', 'Shirt Sleeve Length', 'Short sleeved length',
+                                      'Outside Length', 'Inside Length']
+                elif field_code == 'hips':
+                    field_excludes = ['臀围', '前臀围', '后臀围', 'Hip', 'Front Hip', 'Back Hip']
                 print(f'    处理量体字段：[{field_code}] -> [{field_name}] = {field_value}')
                 
                 # 查找量体字段 - 使用 ElementUI InputNumber 组件，点击 + - 按钮
@@ -1463,8 +1471,9 @@ class TestFullProcess:
                         const fieldName = arguments[0];
                         const targetChengYiSize = arguments[1];
                         const fieldCandidates = arguments[2] || [fieldName];
+                        const fieldExcludes = arguments[3] || [];
                         
-                        console.log('========== 开始查找量体字段：', fieldName, fieldCandidates, '目标成衣尺寸:', targetChengYiSize, '==========');
+                        console.log('========== 开始查找量体字段：', fieldName, fieldCandidates, '排除:', fieldExcludes, '目标成衣尺寸:', targetChengYiSize, '==========');
                         
                         // 1. 先找到量体信息对话框。页面会同时保留多个弹窗 DOM，必须按量体关键词和层级选最像的那个。
                         let liangtiDialog = null;
@@ -1515,9 +1524,11 @@ class TestFullProcess:
                         const getText = (el) => (el ? (el.innerText || el.textContent || '').trim() : '');
                         const normalizeText = (text) => (text || '').replace(/\\s+/g, '').replace(/[()（）]/g, '').trim();
                         const normalizedCandidates = Array.from(new Set(fieldCandidates.map(normalizeText).filter(Boolean)));
+                        const normalizedExcludes = Array.from(new Set(fieldExcludes.map(normalizeText).filter(Boolean)));
                         const textMatches = (text) => {
                             const normalizedText = normalizeText(text);
                             if (!normalizedText) return false;
+                            if (normalizedExcludes.some(excluded => normalizedText === excluded)) return false;
                             return normalizedCandidates.some(candidate => normalizedText === candidate);
                         };
                         const rowPartCellMatches = (row) => {
@@ -1820,7 +1831,7 @@ class TestFullProcess:
                                 visiblePartNames: Array.from(new Set(visiblePartNames)).slice(0, 80)
                             };
                         }
-                    """, field_name, target_cheng_yi_size, field_candidates)
+                    """, field_name, target_cheng_yi_size, field_candidates, field_excludes)
                     field_found = bool(fill_result and fill_result.get('success')) if isinstance(fill_result, dict) else bool(fill_result)
                     
                     if field_found:
