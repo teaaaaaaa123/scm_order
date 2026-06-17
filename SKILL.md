@@ -6,12 +6,12 @@
 
 - Python 3.7+
 - Chrome浏览器
-- ChromeDriver (版本147)
+- ChromeDriver（可选；默认由 webdriver-manager 自动下载）
 
 ## 安装依赖
 
 ```bash
-pip install selenium webdriver-manager
+pip install -r requirements.txt
 ```
 
 ## 配置文件
@@ -39,6 +39,7 @@ pip install selenium webdriver-manager
 ## 使用方法
 
 1. 修改 `config.json` 配置文件
+   - 首次使用可复制 `config.example.json` 为 `config.json`
 2. 运行主程序：
 
 ```bash
@@ -96,3 +97,4 @@ python scm_order.py
 2. 确保config.json配置正确
 3. 面料耗量查询最多等待25分钟（5分钟 × 5次）
 4. 脚本会自动保存流水号到serial_counter.txt
+5. 真实 config.json 不会提交到仓库，请在本地单独配置账号密码

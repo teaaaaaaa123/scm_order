@@ -9,3 +9,4 @@ chromedriver-147/
 venv/
 
 *.log
+serial_counter.txt
