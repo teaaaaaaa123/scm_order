@@ -1427,7 +1427,7 @@ class TestFullProcess:
             for field_code, field_value in liangti_data.items():
                 # 获取字段的中文名称
                 field_aliases = {
-                    'hips': ['hip', '臀围', '全臀围', '净臀围', 'Hip', 'Full Hip'],
+                    'hips': ['fullHip', 'fullHipWidth', '全臀围', 'Full Hip'],
                     'hip': ['hips', '臀围', '全臀围', '净臀围', 'Hip', 'Full Hip'],
                 }
                 mapped_info = liangti_mapping.get(field_code, {})
@@ -1438,7 +1438,7 @@ class TestFullProcess:
                     field_candidates.append(english_name.strip())
                 for alias in field_aliases.get(field_code, []):
                     field_candidates.append(alias)
-                if field_name.startswith('全') and len(field_name) > 1:
+                if field_code != 'hips' and field_name.startswith('全') and len(field_name) > 1:
                     field_candidates.append(field_name[1:])
                 if field_name.startswith('净') and len(field_name) > 1:
                     field_candidates.append(field_name[1:])
